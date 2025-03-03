@@ -1,4 +1,4 @@
-import { FindZipCodeForm } from "./_components/FindZipCodeForm";
+import { FindZipCodeForm } from "./_components/find-zip-code-form";
 
 export default function Home() {
   return (

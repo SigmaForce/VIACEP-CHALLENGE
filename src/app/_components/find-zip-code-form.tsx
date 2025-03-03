@@ -2,10 +2,13 @@
 import { Button } from "@/components/Button";
 import { InputField, InputIcon, InputRoot } from "@/components/Input";
 import { getCep } from "@/http/get-cep";
+import { ICepResult } from "@/types/cep-result";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MagnifyingGlass, MapPin } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { CepResults } from "./cep-result";
 
 const formSchema = z.object({
   zipCode: z
@@ -28,8 +31,11 @@ export const FindZipCodeForm = () => {
     resolver: zodResolver(formSchema),
   });
 
+  const [data, setData] = useState<ICepResult | undefined>();
+
   const onSubmit = async ({ zipCode }: FormSchema) => {
     const cepDetails = await getCep(zipCode);
+    if (cepDetails) setData(cepDetails);
   };
 
   return (
@@ -48,7 +54,7 @@ export const FindZipCodeForm = () => {
             <InputField placeholder="Digite um Cep" {...register("zipCode")} />
           </InputRoot>
         </div>
-        <Button type="submit" className="flex gap-2 self-end">
+        <Button type="submit" className="self-end">
           <MagnifyingGlass className="size-5" weight="bold" />
           Buscar
         </Button>
@@ -58,6 +64,7 @@ export const FindZipCodeForm = () => {
           {errors.zipCode.message}
         </p>
       )}
+      {data && <CepResults data={data} />}
     </>
   );
 };
