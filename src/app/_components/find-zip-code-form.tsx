@@ -26,7 +26,8 @@ export const FindZipCodeForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   });
@@ -35,7 +36,13 @@ export const FindZipCodeForm = () => {
 
   const onSubmit = async ({ zipCode }: FormSchema) => {
     const cepDetails = await getCep(zipCode);
-    if (cepDetails) setData(cepDetails);
+
+    if (cepDetails.error)
+      setError("zipCode", {
+        type: "manual",
+        message: cepDetails.error,
+      });
+    if (cepDetails.error == null && cepDetails.data) setData(cepDetails.data);
   };
 
   return (
@@ -54,9 +61,9 @@ export const FindZipCodeForm = () => {
             <InputField placeholder="Digite um Cep" {...register("zipCode")} />
           </InputRoot>
         </div>
-        <Button type="submit" className="self-end">
+        <Button type="submit" className="self-end" disabled={isSubmitting}>
           <MagnifyingGlass className="size-5" weight="bold" />
-          Buscar
+          {isSubmitting ? "Buscando..." : "Buscar"}
         </Button>
       </form>
       {errors?.zipCode && (
