@@ -5,10 +5,8 @@ import { useCepContext } from "@/hooks/use-cep-context";
 import { ICepResult } from "@/types/cep-result";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MagnifyingGlass, MapPin } from "@phosphor-icons/react/dist/ssr";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CepResults } from "./cep-result";
 
 const formSchema = z.object({
   zipCode: z
@@ -22,7 +20,11 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-export const FindZipCodeForm = () => {
+type FindZipCodeFormProps = {
+  setData: React.Dispatch<React.SetStateAction<ICepResult | undefined>>;
+};
+
+export const FindZipCodeForm = ({ setData }: FindZipCodeFormProps) => {
   const {
     register,
     handleSubmit,
@@ -33,8 +35,6 @@ export const FindZipCodeForm = () => {
   });
 
   const { fetchCep } = useCepContext();
-
-  const [data, setData] = useState<ICepResult | undefined>();
 
   const onSubmit = async ({ zipCode }: FormSchema) => {
     const cepDetails = await fetchCep(zipCode);
@@ -51,7 +51,7 @@ export const FindZipCodeForm = () => {
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex gap-2 w-full mt-4"
+        className="flex lg:flex-row flex-col gap-2 w-full mt-4"
       >
         <div className="flex-1">
           <label htmlFor="zipCode">CEP</label>
@@ -63,7 +63,7 @@ export const FindZipCodeForm = () => {
             <InputField placeholder="Digite um Cep" {...register("zipCode")} />
           </InputRoot>
         </div>
-        <Button type="submit" className="self-end" disabled={isSubmitting}>
+        <Button type="submit" className="lg:self-end" disabled={isSubmitting}>
           <MagnifyingGlass className="size-5" weight="bold" />
           {isSubmitting ? "Buscando..." : "Buscar"}
         </Button>
@@ -73,7 +73,6 @@ export const FindZipCodeForm = () => {
           {errors.zipCode.message}
         </p>
       )}
-      {data && <CepResults data={data} />}
     </>
   );
 };
