@@ -13,3 +13,8 @@ export interface ICepResult {
   ddd: string;
   siafi: string;
 }
+
+export type CepResult = {
+  data: ICepResult | null;
+  error: string | null;
+};
