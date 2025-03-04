@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/Button";
 import { InputField, InputIcon, InputRoot } from "@/components/Input";
-import { getCep } from "@/http/get-cep";
+import { useCepContext } from "@/hooks/use-cep-context";
 import { ICepResult } from "@/types/cep-result";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MagnifyingGlass, MapPin } from "@phosphor-icons/react/dist/ssr";
@@ -32,10 +32,12 @@ export const FindZipCodeForm = () => {
     resolver: zodResolver(formSchema),
   });
 
+  const { fetchCep } = useCepContext();
+
   const [data, setData] = useState<ICepResult | undefined>();
 
   const onSubmit = async ({ zipCode }: FormSchema) => {
-    const cepDetails = await getCep(zipCode);
+    const cepDetails = await fetchCep(zipCode);
 
     if (cepDetails.error)
       setError("zipCode", {
